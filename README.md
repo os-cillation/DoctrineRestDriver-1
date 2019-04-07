@@ -810,7 +810,7 @@ doctrine:
         user:         "Circle"
         password:     "CircleUsers"
         options:
-          authentication_class:  "HttpAuthentication"
+          authenticator_class:  "HttpAuthentication"
       address_api:
         driver_class: "Circle\\DoctrineRestDriver\\Driver"
         host:         "http://api.address.your-url.com"
@@ -818,7 +818,7 @@ doctrine:
         user:         "Circle"
         password:     "CircleAddresses"
         options:
-          authentication_class:  "HttpAuthentication"
+          authenticator_class:  "HttpAuthentication"
 ```
 
 Now it's getting crazy: We will try to read data from two different APIs and persist them into a MySQL database.
