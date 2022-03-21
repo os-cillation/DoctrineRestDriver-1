@@ -92,8 +92,10 @@ class InsertChangeSet {
         $isString          = false;
         $stringStartedWith = null;
 
-        while (($char = substr($values, $stringOffset++, 1)) !== false)
-        {
+        // must be -1 becuase string accessed as array has first `char` under "0"
+        $charactersLength = strlen($values) - 1;
+        for ($x = 0; $x <= $charactersLength; $x++) {
+            $char = $values[$x];
             // Handle the beginning, ending and escaping of characters
             if (static::isCharStringDelimiter($char, $stringStartedWith)) {
                 $stringStartedWith = null;
