@@ -43,9 +43,9 @@ class Table {
         if (empty($tokens['FROM']) && empty($tokens['INSERT']) && empty($tokens['UPDATE'])) return Exceptions::InvalidTypeException('array', 'tokens', null);
 
         $operation = SqlOperation::create($tokens);
-        if ($operation === SqlOperations::INSERT) return $tokens['INSERT'][1]['no_quotes']['parts'][0];
-        if ($operation === SqlOperations::UPDATE) return $tokens['UPDATE'][0]['no_quotes']['parts'][0];
-        return $tokens['FROM'][0]['no_quotes']['parts'][0];
+        if ($operation === SqlOperations::INSERT) return $tokens['INSERT'][1]['no_quotes']['parts'][0] ?? null;
+        if ($operation === SqlOperations::UPDATE) return $tokens['UPDATE'][0]['no_quotes']['parts'][0] ?? null;
+        return $tokens['FROM'][0]['no_quotes']['parts'][0] ?? null;
     }
 
     /**
@@ -59,8 +59,8 @@ class Table {
 
         $operation = SqlOperation::create($tokens);
         if ($operation === SqlOperations::INSERT) return null;
-        if ($operation === SqlOperations::UPDATE) return $tokens['UPDATE'][0]['alias']['name'];
-        return $tokens['FROM'][0]['alias']['name'];
+        if ($operation === SqlOperations::UPDATE) return $tokens['UPDATE'][0]['alias']['name'] ?? null;
+        return $tokens['FROM'][0]['alias']['name'] ?? null;
     }
 
     /**
