@@ -42,7 +42,7 @@ class SelectSingleResult {
 
         $attributeValueMap = array_map(function($token) use ($content, $tableAlias) {
             $key   = str_replace('`', '', empty($token['alias']['name']) ? $token['base_expr'] : $token['alias']['name']);
-            $value = $content[str_replace([$tableAlias . '.', '`'], '', $token['base_expr'])];
+            $value = $content[str_replace([$tableAlias . '.', '`'], '', $token['base_expr'])] ?? null;
             return [$key => $value];
         }, $tokens['SELECT']);
 
