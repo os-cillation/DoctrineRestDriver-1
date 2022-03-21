@@ -1,7 +1,7 @@
 # Motivation
+
 What does a black sheep and a white sheep have in common? They produce wool.<br />
-What does a big bus and a small bus have in common? They drive people around.<br />
-And what does a SQL database and a REST API have in common? They store data.<br />
+What does a big bus and a small bus have in common? They drive people ardoes a SQL database and a REST API have in common? They store data.<br />
 
 As blatantly obvious as this sounds the consequences are tremendous: With REST APIs being nothing more than data storage backends, we are able to reuse object relational mapping tools to access them.
 
@@ -84,8 +84,9 @@ Don't worry, if this is not the case: Luckily, we provide a few annotations for 
 Your API is allowed to respond with a handful of different HTTP status codes to
 be deemed a successful response.
 
+
 | Method    | "successful" status codes    |
-|-----------|------------------------------|
+| ----------- | ------------------------------ |
 | GET       | 200, 203, 206, 404           |
 | PUT/PATCH | 200, 202, 203, 204, 205, 404 |
 | POST      | 200, 201, 202, 203, 204, 205 |
@@ -122,21 +123,21 @@ class Product {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+  
     /**
      * @ORM\Column(type="string", length=100)
      */
     private $name;
-    
+  
     public function getId() {
         return $this->id;
     }
-    
+  
     public function setName($name) {
         $this->name = $name;
         return $this;
     }
-    
+  
     public function getName() {
         return $this->name;
     }
@@ -153,7 +154,7 @@ By using this setting, the driver is performing a lot of magic under the hood:
 - It translates INSERT queries into POST requests to create new data
   - Urls have the following format: ```{apiHost}/{pathToApi}/{tableName}```
 - UPDATE queries will be turned into PUT requests:
-   - Urls have the following format: ```{apiHost}/{pathToApi}/{tableName}/{id}```
+  - Urls have the following format: ```{apiHost}/{pathToApi}/{tableName}/{id}```
 - The DELETE operation will remain:
   - Urls have the following format: ```{apiHost}/{pathToApi}/{tableName}/{id}```
 - SELECT queries become GET requests:
@@ -188,10 +189,10 @@ class UserController extends Controller {
         $entity->setName('Circle');
         $em->persist($entity);
         $em->flush();
-        
+    
         return new Response($entity->getId());
     }
-    
+  
     /**
      * Sends the following request to the API by default:
      * GET http://www.yourSite.com/api/products/1 HTTP/1.1
@@ -205,10 +206,10 @@ class UserController extends Controller {
     public function readAction($id = 1) {
         $em     = $this->getDoctrine()->getManager();
         $entity = $em->find('CircleBundle\Entity\Product', $id);
-        
+    
         return new Response($entity->getName());
     }
-    
+  
     /**
      * Sends the following request to the API:
      * GET http://www.yourSite.com/api/products HTTP/1.1
@@ -222,10 +223,10 @@ class UserController extends Controller {
     public function readAllAction() {
         $em       = $this->getDoctrine()->getManager();
         $entities = $em->getRepository('CircleBundle\Entity\Product')->findAll();
-        
+    
         return new Response($entities->first()->getName());
     }
-    
+  
     /**
      * After sending a GET request (readAction) it sends the following 
      * request to the API by default:
@@ -247,10 +248,10 @@ class UserController extends Controller {
         $entity = $em->find('CircleBundle\Entity\Product', $id);
         $entity->setName('myName');
         $em->flush();
-        
+    
         return new Response($entity->getName());
     }
-    
+  
     /**
      * After sending a GET request (readAction) it sends the following 
      * request to the API by default:
@@ -266,13 +267,14 @@ class UserController extends Controller {
         $entity = $em->find('CircleBundle\Entity\Product', $id);
         $em->remove($entity);
         $em->flush();
-        
+    
         return new Response();
     }
 }
 ```
 
 ## If your API doesn't follow our conventions
+
 Now it's time to introduce you to some annotations, which help you to configure your own routes. Be sure to use them only with ```Doctrine``` entities. All these annotations have the same structure so we will call them ```DataSource``` annotation:
 
 ```php
@@ -308,21 +310,21 @@ class Product {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+  
     /**
      * @ORM\Column(type="string", length=100)
      */
     private $name;
-    
+  
     public function getId() {
         return $this->id;
     }
-    
+  
     public function setName($name) {
         $this->name = $name;
         return $this;
     }
-    
+  
     public function getName() {
         return $this->name;
     }
@@ -380,10 +382,10 @@ class UserController extends Controller {
         $entity->setName('Circle');
         $em->persist($entity);
         $em->flush();
-        
+    
         return new Response($entity->getId());
     }
-    
+  
     /**
      * Sends the following request to the API by default:
      * GET http://www.yourSite.com/api/products/findOne/1 HTTP/1.1
@@ -397,10 +399,10 @@ class UserController extends Controller {
     public function readAction($id = 1) {
         $em     = $this->getDoctrine()->getManager();
         $entity = $em->find('CircleBundle\Entity\Product', $id);
-        
+    
         return new Response($entity->getName());
     }
-    
+  
     /**
      * Sends the following request to the API:
      * GET http://www.yourSite.com/api/products/findAll HTTP/1.1
@@ -414,10 +416,10 @@ class UserController extends Controller {
     public function readAllAction() {
         $em       = $this->getDoctrine()->getManager();
         $entities = $em->getRepository('CircleBundle\Entity\Product')->findAll();
-        
+    
         return new Response($entities->first()->getName());
     }
-    
+  
     /**
      * After sending a GET request (readAction) it sends the following 
      * request to the API by default:
@@ -439,10 +441,10 @@ class UserController extends Controller {
         $entity = $em->find('CircleBundle\Entity\Product', $id);
         $entity->setName('myName');
         $em->flush();
-        
+    
         return new Response($entity->getName());
     }
-    
+  
     /**
      * After sending a GET request (readAction) it sends the following 
      * request to the API by default:
@@ -458,7 +460,7 @@ class UserController extends Controller {
         $entity = $em->find('CircleBundle\Entity\Product', $id);
         $em->remove($entity);
         $em->flush();
-        
+    
         return new Response();
     }
 }
@@ -505,12 +507,13 @@ doctrine:
 Need some more examples? Here they are:
 
 ## Persisting entities
+
 Imagine you have a REST API at http://www.your-url.com/api:
 
-| Route | Method | Description | Payload | Response | Success HTTP Code | Error HTTP Code |
-| ------------- |:-------------:| -----:|-----:|-----:|-----:|-----:|
-| /addresses | POST | persists addresses | UnregisteredAddress | RegisteredAddress | 200 | 400 |
 
+| Route      | Method |        Description |             Payload |          Response | Success HTTP Code | Error HTTP Code |
+| ------------ | :------: | -------------------: | --------------------: | ------------------: | ------------------: | ----------------: |
+| /addresses |  POST  | persists addresses | UnregisteredAddress | RegisteredAddress |               200 |             400 |
 
 ```c2hs
 typedef UnregisteredAddress {
@@ -557,35 +560,35 @@ class Address {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+  
     /**
      * @ORM\Column(type="string")
      */
     private $street;
-    
+  
     /**
      * @ORM\Column(type="string")
      */
     private $city;
-    
+  
     public function setStreet($street) {
         $this->street = $street;
         return $this;
     }
-    
+  
     public function getStreet() {
         return $this->street;
     }
-    
+  
     public function setCity($city) {
         $this->city = $city;
         return $this;
     }
-    
+  
     public function getCity() {
         return $this->city;
     }
-    
+  
     public function getId() {
         return $this->id;
     }
@@ -607,10 +610,10 @@ class AddressController extends Controller {
     public function createAction($street, $city) {
         $em      = $this->getDoctrine()->getManager();
         $address = new CircleBundle\Address();
-        
+    
         $address->setStreet($street)->setCity($city);
         $em->persist($address);
-        
+    
         try {
             $em->flush();
             return new Response('successfully registered');
@@ -629,11 +632,12 @@ Let's extend the first example. Now we want to add a new entity type ```User``` 
 
 The REST API offers the following additional routes:
 
-| Route | Method | Description | Payload | Response |
-| ------------- |:-------------:| -----:|-----:|-----:|
-| /users | POST | persists a new user | UnregisteredUser | RegisteredUser |
-| /addresses | POST | persists a new address | UnregisteredAddress | RegisteredAddress |
-| /addresses/\<id\> | GET | returns one address | NULL | RegisteredAddress |
+
+| Route             | Method |            Description |             Payload |          Response |
+| ------------------- | :------: | -----------------------: | --------------------: | ------------------: |
+| /users            |  POST  |    persists a new user |    UnregisteredUser |    RegisteredUser |
+| /addresses        |  POST  | persists a new address | UnregisteredAddress | RegisteredAddress |
+| /addresses/\<id\> |  GET  |    returns one address |                NULL | RegisteredAddress |
 
 ```c2hs
 typedef UnregisteredUser {
@@ -669,49 +673,49 @@ class User {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+  
     /**
      * @ORM\Column(type="string")
      */
     private $name;
-    
+  
     /**
      * @ORM\OneToOne(targetEntity="CircleBundle\Address", cascade={"persist, remove"})
      */
     private $address;
-    
+  
     /**
      * @ORM\Column(type="string")
      */
     private $password;
-    
+  
     public function setName($name) {
         $this->name = $name;
         return $this;
     }
-    
+  
     public function getName() {
         return $this->name;
     }
-    
+  
     public function setPassword($password) {
         $this->password = $password;
         return $this;
     }
-    
+  
     public function getPassword() {
         return $this->password;
     }
-    
+  
     public function getId() {
         return $this->id;
     }
-    
+  
     public function setAddress(Address $address) {
         $this->address = $address;
         return $this;
     }
-    
+  
     public function getAddress() {
         return $this->address;
     }
@@ -719,7 +723,6 @@ class User {
 ```
 
 The user has a relation to address. So let's have a look at what happens if we associate them:
-
 
 ```php
 <?php
@@ -735,14 +738,14 @@ class UserController extends Controller {
         $em      = $this->getDoctrine()->getManager();
         $address = $em->find("CircleBundle\Entity\Address", $addressId);
         $user    = new User();
-        
+    
         $user->setName($name)
             ->setPassword($password)
             ->setAddress($address);
-        
+    
         $em->persist($user);
         $em->flush();
-        
+    
         return new Response('successfully registered');
     }
 }
@@ -766,29 +769,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\HttpFoundation\Response;
 
 class UserController extends Controller {
-    
+  
     public function remove($id = 1) {
         $em = $this->getDoctrine()->getManager();
         $em->find('CircleBundle\Entity\User', $id);
         $em->remove($em);
         $em->flush();
-        
+    
         return new Response('successfully removed');
     }
 }
 ```
 
-
 For example, a DELETE request with the id ```1``` would trigger these requests:
+
 ```
 DELETE http://www.your-url.com/api/addresses/1 HTTP/1.1
 DELETE http://www.your-url.com/api/users/1 HTTP/1.1
 ```
 
-
 Great, isn't it?
 
 ## Using multiple Backends
+
 In this last example we split the user and the address routes into two different REST APIs.
 This means we need multiple managers which is explained in the Doctrine documentation:
 
@@ -824,15 +827,17 @@ doctrine:
 Now it's getting crazy: We will try to read data from two different APIs and persist them into a MySQL database.
 Imagine the user API with the following route:
 
-| Route | Method | Description | Payload | Response |
-| ------------- |:-------------:| -----:|-----:|-----:|
-| /users/\<id\> | GET | returns one user | NULL | RegisteredUser |
+
+| Route         | Method |      Description | Payload |       Response |
+| --------------- | :------: | -----------------: | --------: | ---------------: |
+| /users/\<id\> |  GET  | returns one user |    NULL | RegisteredUser |
 
 and the address API with this entry point:
 
-| Route | Method | Description | Payload | Response |
-| ------------- |:-------------:| -----:|-----:|-----:|
-| /addresses/\<id\> | GET | returns one address | NULL | RegisteredAddress |
+
+| Route             | Method |         Description | Payload |          Response |
+| ------------------- | :------: | --------------------: | --------: | ------------------: |
+| /addresses/\<id\> |  GET  | returns one address |    NULL | RegisteredAddress |
 
 We want to read a user from the user API and an address from the address API.
 After that we will associate and persist them in our MySQL database.
@@ -851,15 +856,15 @@ class UserController extends Controller {
         $emUsers       = $this->getDoctrine()->getManager('user_api');
         $emAddresses   = $this->getDoctrine()->getManager('address_api');
         $emPersistence = $this->getDoctrine()->getManager();
-        
+    
         $user    = $emUsers->find("CircleBundle\Entity\User", $userId);
         $address = $emAddresses->find("CircleBundle\Entity\Address", $addressId);
         $user->setAddress($address);
-        
+    
         $emPersistence->persist($address);
         $emPersistence->persist($user);
         $emPersistence->flush();
-        
+    
         return new Response('successfully persisted');
     }
 }
@@ -883,10 +888,12 @@ make test
 ```
 
 # Contributing
+
 If you want to contribute to this repository, please ensure ...
-  - to follow the existing coding style.
-  - to use the linting tools that are listed in the ```composer.json``` (which you get for free when using ```make```).
-  - to add and/or customize unit tests for any changed code.
-  - to reference the corresponding issue in your pull request with a small description of your changes.
+
+- to follow the existing coding style.
+- to use the linting tools that are listed in the ```composer.json``` (which you get for free when using ```make```).
+- to add and/or customize unit tests for any changed code.
+- to reference the corresponding issue in your pull request with a small description of your changes.
 
 All contributors are listed in the ```AUTHORS``` file, sorted by the time of their first contribution.
