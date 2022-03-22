@@ -47,6 +47,12 @@
     "doctrine/dbal": "2.*",
     "greenlion/php-sql-parser": "^4.0",
     "doctrine/orm": "2.*",
-    "ci/restclientbundle": "^2.0.2"
-  }
+    "ci/restclientbundle": "dev-osc-main@dev"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/os-cillation/CiRestClientBundle.git"
+    }
+  ]
 }
