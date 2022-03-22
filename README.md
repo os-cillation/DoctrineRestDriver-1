@@ -1,7 +1,8 @@
 # Motivation
 
 What does a black sheep and a white sheep have in common? They produce wool.<br />
-What does a big bus and a small bus have in common? They drive people ardoes a SQL database and a REST API have in common? They store data.<br />
+What does a big bus and a small bus have in common? They drive people around.<br />
+And what does a SQL database and a REST API have in common? They store data.<br />
 
 As blatantly obvious as this sounds the consequences are tremendous: With REST APIs being nothing more than data storage backends, we are able to reuse object relational mapping tools to access them.
 
