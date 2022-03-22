@@ -18,7 +18,7 @@
 
 namespace Circle\DoctrineRestDriver;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Provider for doctrine meta data
@@ -29,7 +29,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 class MetaData {
 
     /**
-     * @var ObjectManager
+     * @var EntityManager
      */
     private $em;
 
@@ -38,7 +38,7 @@ class MetaData {
      */
     public function __construct() {
         $this->em = array_filter(debug_backtrace(), function($trace) {
-            return isset($trace['object']) && $trace['object'] instanceof ObjectManager;
+            return isset($trace['object']) && $trace['object'] instanceof EntityManager;
         });
     }
 
