@@ -76,7 +76,7 @@ class InsertChangeSet {
     }
 
     /**
-     * parses the values string into a an array that has the correct amount of values, compared with the column array.
+     * Parse the string values into an array that has the correct amount of values, compared with the column array
      *
      * @see isCharStringDelimiter for a list of valid string starting characters.
      * @see SqlQuery::quote() for the place where the automatic escape happens

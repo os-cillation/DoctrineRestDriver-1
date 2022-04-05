@@ -33,7 +33,7 @@ class SqlQuery {
     /**
      * replaces param placeholders with corresponding params
      *
-     * offset is moved to to the end of the newly added value so contained questionmarks are not interpreted as
+     * offset is moved to the end of the newly added value so contained question marks are not interpreted as
      * placeholders.
      *
      * @param  string $query
