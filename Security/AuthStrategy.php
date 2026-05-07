@@ -35,5 +35,5 @@ interface AuthStrategy {
      * @param  Request $request
      * @return Request
      */
-    public function transformRequest(Request $request);
+    public function transformRequest(Request $request): Request;
 }

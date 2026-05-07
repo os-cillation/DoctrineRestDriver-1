@@ -46,7 +46,7 @@ class HttpAuthentication implements AuthStrategy {
     /**
      * {@inheritdoc}
      */
-    public function transformRequest(Request $request) {
+    public function transformRequest(Request $request): Request {
         $options  = $request->getCurlOptions();
         $headers  = empty($options[CURLOPT_HTTPHEADER]) ? [] : $options[CURLOPT_HTTPHEADER];
         array_push($headers, 'Authorization: Basic ' . base64_encode($this->config['user'] . ':' . $this->config['password']));
