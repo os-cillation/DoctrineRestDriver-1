@@ -22,6 +22,8 @@ use Circle\DoctrineRestDriver\Annotations\RoutingTable;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection as AbstractConnection;
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Doctrine connection for the rest driver
@@ -29,66 +31,100 @@ use Doctrine\DBAL\Connection as AbstractConnection;
  * @author    Tobias Hauck <tobias@circle.ai>
  * @copyright 2015 TeeAge-Beatz UG
  */
-class Connection extends AbstractConnection {
-
-    /**
-     * @var Statement
-     */
-    private $statement;
+class Connection implements ConnectionInterface {
 
     /**
      * @var array
      */
-    private $routings;
+    private array $params;
 
     /**
-     * Connection constructor
-     *
-     * @param array        $params
-     * @param Driver       $driver
+     * @var RoutingTable
+     */
+    private RoutingTable $routings;
+
+    /**
+     * @var Statement|null
+     */
+    private ?Statement $lastStatement = null;
+
+    /**
+     * @param array $params
      * @param RoutingTable $routings
      */
-    public function __construct(array $params, Driver $driver, RoutingTable $routings, Configuration $config = null, EventManager $eventManager = null) {
+    public function __construct(array $params, RoutingTable $routings)
+    {
+        $this->params = $params;
         $this->routings = $routings;
-        parent::__construct($params, $driver, $config, $eventManager);
     }
 
     /**
-     * prepares the statement execution
-     *
-     * @param  string $statement
-     * @return Statement
+     * {@inheritdoc}
      */
-    public function prepare($statement) {
-        $this->connect();
-
-        $this->statement = new Statement($statement, $this->getParams(), $this->routings);
-        $this->statement->setFetchMode($this->defaultFetchMode);
-
-        return $this->statement;
+    public function prepare(string $sql): Statement
+    {
+        $this->lastStatement = new Statement($sql, $this->params, $this->routings);
+        return $this->lastStatement;
     }
 
     /**
-     * returns the last inserted id
-     *
-     * @param  string|null $seqName
-     * @return int
-     *
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     * {@inheritdoc}
      */
-    public function lastInsertId($seqName = null) {
-        return $this->statement->getId();
+    public function query(string $sql): Result
+    {
+        $stmt = $this->prepare($sql);
+        return $stmt->execute();
     }
 
     /**
-     * Executes a query, returns a statement
-     *
-     * @return Statement
+     * {@inheritdoc}
      */
-    public function query() {
-        $statement = $this->prepare(func_get_args()[0]);
-        $statement->execute();
+    public function quote($value, $type = ParameterType::STRING)
+    {
+        return "'" . addslashes($value) . "'";
+    }
 
-        return $statement;
+    /**
+     * {@inheritdoc}
+     */
+    public function exec(string $sql): int
+    {
+        $result = $this->query($sql);
+        return $result->rowCount();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function lastInsertId($name = null): false|string|int|null
+    {
+        if ($this->lastStatement === null) {
+            return false;
+        }
+        return $this->lastStatement->getLastInsertId() ?? false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function beginTransaction(): bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function commit(): bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rollback(): bool
+    {
+        return true;
     }
 }

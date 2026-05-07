@@ -19,16 +19,14 @@
 namespace Circle\DoctrineRestDriver;
 
 use Circle\DoctrineRestDriver\Annotations\RoutingTable;
-use Circle\DoctrineRestDriver\Exceptions\DoctrineRestDriverException;
-use Circle\DoctrineRestDriver\Exceptions\Exceptions;
 use Circle\DoctrineRestDriver\Exceptions\RequestFailedException;
 use Circle\DoctrineRestDriver\Security\AuthStrategy;
 use Circle\DoctrineRestDriver\Transformers\MysqlToRequest;
 use Circle\DoctrineRestDriver\Types\Authentication;
-use Circle\DoctrineRestDriver\Types\Result;
+use Circle\DoctrineRestDriver\Types\Result as TypesResult;
 use Circle\DoctrineRestDriver\Types\SqlQuery;
-use Circle\DoctrineRestDriver\Validation\Assertions;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Executes the statement - sends requests to an api
@@ -38,7 +36,7 @@ use Doctrine\DBAL\Driver\Statement as StatementInterface;
  *
  * @SuppressWarnings("PHPMD.TooManyPublicMethods")
  */
-class Statement implements \IteratorAggregate, StatementInterface {
+class Statement implements StatementInterface {
 
     /**
      * @var string
@@ -61,29 +59,9 @@ class Statement implements \IteratorAggregate, StatementInterface {
     private $restClient;
 
     /**
-     * @var array
+     * @vae int|string|null
      */
-    private $result;
-
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var int
-     */
-    private $errorCode;
-
-    /**
-     * @var string
-     */
-    private $errorMessage;
-
-    /**
-     * @var int
-     */
-    private $fetchMode;
+    private $lastInsertId = null;
 
     /**
      * @var AuthStrategy
@@ -110,7 +88,8 @@ class Statement implements \IteratorAggregate, StatementInterface {
      *
      * @SuppressWarnings("PHPMD.StaticAccess")
      */
-    public function __construct($query, array $options, RoutingTable $routings) {
+    public function __construct(string $query, array $options, RoutingTable $routings)
+    {
         $this->query          = SqlQuery::quoteUrl($query);
         $this->routings       = $routings;
         $this->mysqlToRequest = new MysqlToRequest($options, $this->routings);
@@ -123,7 +102,8 @@ class Statement implements \IteratorAggregate, StatementInterface {
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, $type = null) {
+    public function bindValue($param, $value, $type = ParameterType::STRING)
+    {
         $this->params[$param] = $value;
         return true;
     }
@@ -133,125 +113,37 @@ class Statement implements \IteratorAggregate, StatementInterface {
      *
      * @SuppressWarnings("PHPMD.StaticAccess")
      */
-    public function bindParam($column, &$variable, $type = null, $length = null) {
-        return Exceptions::MethodNotImplementedException(get_class($this), 'bindParam');
+    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    {
+        $this->params[$column] = &$variable;
+        return true;
     }
 
     /**
      * {@inheritdoc}
-     */
-    public function errorCode() {
-        return $this->errorCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function errorInfo() {
-        return $this->errorMessage;
-    }
-
-    /**
-     * {@inheritdoc}
-     * @throws RequestFailedException
      *
      * @SuppressWarnings("PHPMD.StaticAccess")
      */
-    public function execute($params = null) {
+    public function execute($params = null): Result
+    {
         $query   = SqlQuery::setParams($this->query, $params !== null ? $params : $this->params);
         $request = $this->authStrategy->transformRequest($this->mysqlToRequest->transform($query));
 
-        try {
-            $response     = $this->restClient->send($request);
-            $result       = new Result($query, $request->getMethod(), $response, $this->options);
-            $this->result = $result->get();
-            $this->id     = $result->id();
+        $response = $this->restClient->send($request);
+        $result = new TypesResult($query, $request->getMethod(), $response, $this->options);
+        $rows = $result->get();
+        $this->lastInsertId = $result->id();
 
-            return true;
-        } catch(RequestFailedException $e) {
-            // as the error handling proposed by doctrine
-            // does not work, we use the way of PDO_mysql
-            // which just throws the possible errors
-            throw new DoctrineRestDriverException($e->getMessage(), $e->getCode());
-        }
+        return new Result($rows, $this->lastInsertId);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rowCount() {
-        return count($this->result);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function closeCursor() {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function columnCount() {
-        return empty($this->result) ? 0 : count($this->result[0]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null) {
-        $this->fetchMode = $fetchMode;
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @SuppressWarnings("PHPMD.StaticAccess")
-     */
-    public function fetch($fetchMode = NULL, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0) {
-        $fetchMode = empty($fetchMode) ? $this->fetchMode : $fetchMode;
-        Assertions::assertSupportedFetchMode($fetchMode);
-
-        return count($this->result) === 0 ? false : array_pop($this->result);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchAll($fetchMode = NULL, $fetchArgument = NULL, $ctorArgs = NULL) {
-        $result    = [];
-        $fetchMode = empty($fetchMode) ? $this->fetchMode : $fetchMode;
-
-        while (($row = $this->fetch($fetchMode))) array_push($result, $row);
-
-        return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @SuppressWarnings("PHPMD.StaticAccess")
-     */
-    public function fetchColumn($columnIndex = 0) {
-        return Exceptions::MethodNotImplementedException(get_class($this), 'fetchColumn');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator() {
-        return $this->query;
-    }
-
+    
     /**
      * Returns the last auto incremented id
      *
-     * @return int
+     * @return int|string|null
      */
-    public function getId() {
-        return $this->id;
+    public function getLastInsertId(): int|string|null
+    {
+        return $this->lastInsertId;
     }
 }

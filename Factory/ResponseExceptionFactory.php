@@ -19,7 +19,7 @@
 namespace Circle\DoctrineRestDriver\Factory;
 
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Driver\DriverException as DriverExceptionInterface;
+use Doctrine\DBAL\Driver\Exception as DriverExceptionInterface;
 use Doctrine\DBAL\Exception as DBALException;
 
 /**

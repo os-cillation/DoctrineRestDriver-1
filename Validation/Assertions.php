@@ -18,8 +18,6 @@
 
 namespace Circle\DoctrineRestDriver\Validation;
 
-use Circle\DoctrineRestDriver\Exceptions\UnsupportedFetchModeException;
-use Circle\DoctrineRestDriver\Exceptions\Exceptions;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
 
 /**
@@ -27,24 +25,8 @@ use Prophecy\Exception\Doubler\ClassNotFoundException;
  *
  * @author    Tobias Hauck <tobias@circle.ai>
  * @copyright 2015 TeeAge-Beatz UG
- *
- * @SuppressWarnings("PHPMD.StaticAccess")
  */
 class Assertions {
-
-    /**
-     * Checks if the given fetch mode is supported
-     *
-     * @param  int $fetchMode
-     * @return int
-     * @throws UnsupportedFetchModeException
-     *
-     * @SuppressWarnings("PHPMD.StaticAccess")
-     */
-    public static function assertSupportedFetchMode($fetchMode) {
-        return $fetchMode !== \PDO::FETCH_ASSOC ? Exceptions::UnsupportedFetchModeException($fetchMode) : $fetchMode;
-    }
-
     /**
      * Checks if the given class exists
      *

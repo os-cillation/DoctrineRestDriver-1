@@ -18,7 +18,7 @@
 
 namespace Circle\DoctrineRestDriver\Exceptions;
 
-use Doctrine\DBAL\Driver\DriverException;
+use Doctrine\DBAL\Driver\Exception as DriverException;
 use Circle\DoctrineRestDriver\Types\Request;
 
 /**
