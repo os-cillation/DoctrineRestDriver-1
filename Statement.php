@@ -59,7 +59,7 @@ class Statement implements StatementInterface {
     private $restClient;
 
     /**
-     * @vae int|string|null
+     * @var int|string|null
      */
     private $lastInsertId = null;
 
@@ -136,7 +136,7 @@ class Statement implements StatementInterface {
 
         return new Result($rows, $this->lastInsertId);
     }
-    
+
     /**
      * Returns the last auto incremented id
      *
