@@ -54,7 +54,7 @@ class Driver extends AbstractMySQLDriver {
         $metaData = new MetaData();
         $entityNamespaces = $metaData->getEntityNamespaces();
         if (!empty($entityNamespaces)) {
-            $this->connecion = new Connection($params, new RoutingTable($metaData->getEntityNamespaces()));
+            $this->connection = new Connection($params, new RoutingTable($metaData->getEntityNamespaces()));
         }
 
         return $this->connection;
